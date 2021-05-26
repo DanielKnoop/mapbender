@@ -24,4 +24,13 @@ abstract class AbstractElementService implements MinimalInterface, EditableInter
     {
         return $element->getConfiguration() ?: array();
     }
+
+    /**
+     * Should return the (namespaced) JavaScript widget constructor name. E.g. 'mapbender.mbAboutDialog'.
+     * May also return boolean false to indicate no javascript logic needs initializing at all.
+     *
+     * @param Element $element
+     * @return string|false
+     */
+    abstract public function getWidgetName(Element $element);
 }

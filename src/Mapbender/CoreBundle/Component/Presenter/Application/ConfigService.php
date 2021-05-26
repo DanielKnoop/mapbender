@@ -191,7 +191,7 @@ class ConfigService
             $service = $this->elementFactory->getInventory()->getHandlerService($element, true);
             if ($service) {
                 $values = array(
-                    'init' => 'FIXME: service element widget constructor name',
+                    'init' => $service->getWidgetName($element),
                     'configuration' => $service->getClientConfiguration($element),
                 );
             } else {
