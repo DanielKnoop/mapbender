@@ -3,7 +3,8 @@
 namespace Mapbender\CoreBundle\Component\Presenter\Application;
 
 use Mapbender\CoreBundle\Component\Cache\ApplicationDataService;
-use Mapbender\CoreBundle\Component\Element as Element;
+use Mapbender\CoreBundle\Component\ElementFactory;
+use Mapbender\CoreBundle\Entity;
 use Mapbender\CoreBundle\Component\ElementBase\BoundConfigMutator;
 use Mapbender\CoreBundle\Component\Presenter\SourceService;
 use Mapbender\CoreBundle\Component\Source\TypeDirectoryService;
@@ -14,7 +15,6 @@ use Mapbender\CoreBundle\Entity\SourceInstance;
 use Mapbender\CoreBundle\Entity\SourceInstanceAssignment;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Asset\PackageInterface;
-use Symfony\Component\Asset\Packages;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Mapbender\CoreBundle\Component\Presenter\ApplicationService;
@@ -37,6 +37,8 @@ class ConfigService
     protected $sourceTypeDirectory;
     /** @var UrlProcessor */
     protected $urlProcessor;
+    /** @var ElementFactory */
+    protected $elementFactory;
 
     /** @var UrlGeneratorInterface */
     protected $router;
@@ -52,6 +54,7 @@ class ConfigService
                                 ApplicationDataService $cacheService,
                                 TypeDirectoryService $sourceTypeDirectory,
                                 UrlProcessor $urlProcessor,
+                                ElementFactory $elementFactory,
                                 UrlGeneratorInterface $router,
                                 LoggerInterface $logger,
                                 PackageInterface $baseUrlPackage,
@@ -61,6 +64,7 @@ class ConfigService
         $this->cacheService = $cacheService;
         $this->sourceTypeDirectory = $sourceTypeDirectory;
         $this->urlProcessor = $urlProcessor;
+        $this->elementFactory = $elementFactory;
         $this->router = $router;
         $this->logger = $logger;
         $this->assetBaseUrl = $baseUrlPackage->getUrl(null);
@@ -73,7 +77,7 @@ class ConfigService
      */
     public function getConfiguration(Application $entity)
     {
-        $activeElements = $this->basePresenter->getActiveElements($entity);
+        $activeElements = $this->basePresenter->prepareElements($entity);
         $configuration = array(
             'application' => $this->getBaseConfiguration($entity),
             'elements'    => $this->getElementConfiguration($activeElements),
@@ -84,9 +88,11 @@ class ConfigService
         // This is useful for BaseSourceSwitcher, SuggestMap, potentially many more, that influence the initially
         // visible state of the frontend.
         $configBeforeElement = $configAfterElements = $configuration;
-        foreach ($activeElements as $elementComponent) {
-            if ($elementComponent instanceof BoundConfigMutator) {
-                $configAfterElements = $elementComponent->updateAppConfig($configBeforeElement);
+        foreach ($activeElements as $element) {
+            if (\is_a($element->getClass(), BoundConfigMutator::class, true)) {
+                /** @var BoundConfigMutator $component */
+                $component = $this->elementFactory->componentFromEntity($element, true);
+                $configAfterElements = $component->updateAppConfig($configBeforeElement);
                 $configBeforeElement = $configAfterElements;
             }
         }
@@ -175,16 +181,28 @@ class ConfigService
     }
 
     /**
-     * @param Element[] $elements Element Components
+     * @param Entity\Element[] $elements
      * @return mixed[]
      */
-    public static function getElementConfiguration($elements)
+    protected function getElementConfiguration($elements)
     {
         $elementConfig = array();
         foreach ($elements as $element) {
-            $elementConfig[$element->getId()] = array(
-                'init'          => $element->getWidgetName(),
-                'configuration' => $element->getPublicConfiguration());
+            $service = $this->elementFactory->getInventory()->getHandlerService($element, true);
+            if ($service) {
+                $values = array(
+                    'init' => 'FIXME: service element widget constructor name',
+                    'configuration' => $service->getClientConfiguration($element),
+                );
+            } else {
+                $component = $this->elementFactory->componentFromEntity($element, true);
+                $values = array(
+                    'init' => $component->getWidgetName(),
+                    'configuration' => $component->getPublicConfiguration(),
+                );
+            }
+
+            $elementConfig[$element->getId()] = $values;
         }
         return $elementConfig;
     }

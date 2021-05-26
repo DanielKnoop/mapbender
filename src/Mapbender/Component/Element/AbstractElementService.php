@@ -15,4 +15,13 @@ abstract class AbstractElementService implements MinimalInterface, EditableInter
      * @return ElementView
      */
     abstract public function getView(Element $element);
+
+    /**
+     * @param Element $element
+     * @return array
+     */
+    public function getClientConfiguration(Element $element)
+    {
+        return $element->getConfiguration() ?: array();
+    }
 }
