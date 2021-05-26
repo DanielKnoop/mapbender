@@ -4,6 +4,7 @@ namespace Mapbender\CoreBundle\Component\Presenter\Application;
 
 use Mapbender\CoreBundle\Component\Cache\ApplicationDataService;
 use Mapbender\CoreBundle\Component\ElementFactory;
+use Mapbender\CoreBundle\Component\Exception\ElementErrorException;
 use Mapbender\CoreBundle\Entity;
 use Mapbender\CoreBundle\Component\ElementBase\BoundConfigMutator;
 use Mapbender\CoreBundle\Component\Presenter\SourceService;
@@ -195,7 +196,14 @@ class ConfigService
                     'configuration' => $service->getClientConfiguration($element),
                 );
             } else {
-                $component = $this->elementFactory->componentFromEntity($element, true);
+                try {
+                    $component = $this->elementFactory->componentFromEntity($element, true);
+                } catch (ElementErrorException $e) {
+                    // for frontend presentation, incomplete / invalid elements are silently suppressed
+                    // => do nothing
+                    continue;
+                }
+
                 $values = array(
                     'init' => $component->getWidgetName(),
                     'configuration' => $component->getPublicConfiguration(),
