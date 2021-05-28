@@ -130,7 +130,7 @@ class ElementMarkupRenderer
 
     protected function prepareAttributes($viewAttributes, $baseAttributes)
     {
-        $classes = array('mb-element mb-element-omg');
+        $classes = array('mb-element');
         if (!empty($viewAttributes['class'])) {
             $classes[] = $viewAttributes['class'];
         }
