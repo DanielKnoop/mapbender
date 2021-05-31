@@ -16,7 +16,6 @@ use Mapbender\CoreBundle\Entity\SourceInstance;
 use Mapbender\CoreBundle\Entity\SourceInstanceAssignment;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Asset\PackageInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Mapbender\CoreBundle\Component\Presenter\ApplicationService;
 
@@ -28,8 +27,6 @@ use Mapbender\CoreBundle\Component\Presenter\ApplicationService;
  */
 class ConfigService
 {
-    /** @var ContainerInterface */
-    protected $container;
     /** @var ApplicationService */
     protected $basePresenter;
     /** @var ApplicationDataService */
