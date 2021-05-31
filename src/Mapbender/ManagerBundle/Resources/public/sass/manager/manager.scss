@@ -9,12 +9,13 @@
 @import "modules/table";
 @import "element/mbslider";
 
-
-@import url("https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,700;1,500#standard-styles");
-
-
 body {
   background-color: #e8e8e8;
+  font-weight: 300;
+}
+// Use lighter 400 font-weight by default for implicitly "bold" elements
+h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, b, strong, label, th {
+  font-weight: 400;
 }
 
 h1, .h1 {
@@ -28,13 +29,6 @@ h3, .h3 {
 }
 h4, .h4, .tabContainer > ul {
   font-size: 1.35rem;
-}
-
-.content, .loginBox {
-  font-weight: 300;
-  label, th {
-    font-weight: 500; // Down from Bootstrap default 700
-  }
 }
 
 .navigationBar {
