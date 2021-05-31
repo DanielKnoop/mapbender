@@ -6,6 +6,7 @@ namespace Mapbender\Component\Element;
 
 use Mapbender\CoreBundle\Component\ElementBase\EditableInterface;
 use Mapbender\CoreBundle\Component\ElementBase\MinimalInterface;
+use Mapbender\CoreBundle\Component\ElementHttpHandlerInterface;
 use Mapbender\CoreBundle\Entity\Element;
 
 abstract class AbstractElementService implements MinimalInterface, EditableInterface
@@ -50,5 +51,13 @@ abstract class AbstractElementService implements MinimalInterface, EditableInter
     public function getRequiredAssets(Element $element)
     {
         return array();
+    }
+
+    /**
+     * @return ElementHttpHandlerInterface|null
+     */
+    public function getHttpHandler()
+    {
+        return null;
     }
 }
