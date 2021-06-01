@@ -42,8 +42,8 @@ class ConfigService
     protected $router;
     /** @var LoggerInterface */
     protected $logger;
-    /** @var string */
-    protected $environment;
+    /** @var bool */
+    protected $debug;
     /** @var string */
     protected $assetBaseUrl;
 
@@ -56,7 +56,7 @@ class ConfigService
                                 UrlGeneratorInterface $router,
                                 LoggerInterface $logger,
                                 PackageInterface $baseUrlPackage,
-                                $environment)
+                                $debug)
     {
         $this->elementFilter = $elementFilter;
         $this->cacheService = $cacheService;
@@ -66,7 +66,7 @@ class ConfigService
         $this->router = $router;
         $this->logger = $logger;
         $this->assetBaseUrl = $baseUrlPackage->getUrl(null);
-        $this->environment = $environment;
+        $this->debug = $debug;
     }
 
     /**
@@ -105,7 +105,7 @@ class ConfigService
             'urls'          => $this->getUrls($entity),
             'publicOptions' => $entity->getPublicOptions(),
             'slug'          => $entity->getSlug(),
-            'debug' => ($this->environment !== 'prod'),
+            'debug' => $this->debug,
             'mapEngineCode' => $entity->getMapEngineCode(),
             'persistentView' => $entity->getPersistentView(),
         );
