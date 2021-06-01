@@ -286,5 +286,11 @@
             <argument type="service" id="doctrine.orm.default_entity_manager" />
             <argument type="service" id="mapbender.application.yaml_entity_repository" />
         </service>
+        <!-- application import pseudo-fixture -->
+        <service class="Mapbender\CoreBundle\DataFixtures\ORM\Application\LoadApplicationData">
+            <tag name="doctrine.fixture.orm" />
+            <argument type="service" id="mapbender.application.yaml_entity_repository" />
+            <argument type="service" id="mapbender.application_importer.service" />
+        </service>
     </services>
 </container>

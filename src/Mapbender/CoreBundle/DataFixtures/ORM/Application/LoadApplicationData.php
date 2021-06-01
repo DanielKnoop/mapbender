@@ -9,30 +9,24 @@ use Mapbender\CoreBundle\Component\ApplicationYAMLMapper;
 use Mapbender\CoreBundle\Entity\Application;
 use Mapbender\CoreBundle\Utils\EntityUtil;
 use Mapbender\ManagerBundle\Component\ImportHandler;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * The class LoadApplicationData imports YAML defined applications into a mapbender database.
  *
  * @author Paul Schmidt
- *
- * @todo Sf4: figure out if Fixtures can use service DI
  */
-class LoadApplicationData implements FixtureInterface, ContainerAwareInterface
+class LoadApplicationData implements FixtureInterface
 {
     /** @var ApplicationYAMLMapper */
     protected $repository;
     /** @var ImportHandler */
     protected $importer;
 
-    /**
-     * @param ContainerInterface|null $container
-     */
-    public function setContainer(ContainerInterface $container = null)
+    public function __construct(ApplicationYAMLMapper $repository,
+                                ImportHandler $importer)
     {
-        $this->repository = $container->get('mapbender.application.yaml_entity_repository');
-        $this->importer = $container->get('mapbender.application_importer.service');
+        $this->repository = $repository;
+        $this->importer = $importer;
     }
 
     /**
